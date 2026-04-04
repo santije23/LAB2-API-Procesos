@@ -1,12 +1,12 @@
-# 🤝 Organización de Trabajo en Equipo - Shell Wish
+# Organización de Trabajo en Equipo - Shell Wish
 
-## 🎯 Objetivo
+## Objetivo
 
 Trabajar en paralelo en el laboratorio del shell (`wish`) sin conflictos, dividiendo responsabilidades y usando buenas prácticas con Git.
 
 ---
 
-## 🌿 Estrategia de ramas
+## Estrategia de ramas
 
 * Rama principal: `main`
 * Rama para realizar pull request:`develop`
@@ -21,7 +21,7 @@ feature/redirection
 
 ---
 
-## 🔄 Flujo de trabajo
+## Flujo de trabajo
 
 1. Actualizar repositorio:
 
@@ -56,79 +56,190 @@ git push origin feature/nombre-tarea
 
 ---
 
-## 🧩 División de tareas (tipo Jira)
+## División de tareas (tipo Jira)
 
-### 🧱 ÉPICA 1: Base del shell
+## División de tareas (tipo Jira)
 
-* **TASK-1 (Santiago):** Loop principal (`main`, `getline`)
-* **TASK-2 (Emiro):** Modo batch (leer desde archivo)
+### ÉPICA 1: Base del shell
 
----
+* **TASK-1 (Santiago): Loop principal (`main`, `getline`)**
+  
+  Implementar el ciclo infinito del shell en `main`:
+  - Mostrar el prompt `wish> ` en modo interactivo.
+  - Leer entrada usando `getline()`.
+  - Detectar EOF (Ctrl+D) y terminar con `exit(0)`.
+  - Validar que el shell se ejecute con 0 o 1 argumento.
+  - Delegar la línea leída al módulo de parsing.
 
-### 🔍 ÉPICA 2: Parsing
+* **TASK-2 (Emiro): Modo batch (leer desde archivo)**
 
-* **TASK-3 (Santiago):** Tokenización (`strsep`)
-* **TASK-4 (Santiago):** Estructura `Command`
-* **TASK-5 (Santiago):** Parsing de `>` y `&`
-
----
-
-### ⚙️ ÉPICA 3: Ejecución
-
-* **TASK-6 (Emiro):** `fork()` + `execv()`
-* **TASK-7 (Emiro):** Manejo de argumentos
-* **TASK-8 (Emiro):** `wait()` / `waitpid()`
-
----
-
-### 🧠 ÉPICA 4: Built-in commands
-
-* **TASK-9 (Emiro):** `exit`
-* **TASK-10 (Emiro):** `cd`
-* **TASK-11 (Emiro):** `path`
+  Implementar ejecución en modo batch:
+  - Detectar si se recibe un archivo como argumento.
+  - Leer comandos línea por línea desde el archivo.
+  - No imprimir el prompt en este modo.
+  - Manejar errores si el archivo no existe o no se puede abrir.
+  - Reutilizar el mismo flujo de parsing y ejecución.
 
 ---
 
-### 📂 ÉPICA 5: Path
+### ÉPICA 2: Parsing
 
-* **TASK-12 (Emiro):** Búsqueda de ejecutables (`access`)
+* **TASK-3 (Santiago): Tokenización (`strsep`)**
+
+  Separar la entrada en tokens:
+  - Usar `strsep()` para dividir por espacios y tabs.
+  - Manejar múltiples espacios consecutivos.
+  - Ignorar tokens vacíos.
+  - Preparar base para detectar operadores especiales (`>`, `&`).
+
+* **TASK-4 (Santiago): Estructura `Command`**
+
+  Construir una abstracción del comando:
+  - Llenar `command` (nombre del ejecutable).
+  - Construir arreglo `args` terminado en `NULL` (requerido por `execv`).
+  - Inicializar flags (`background`, `redirect_file`).
+  - Validar consistencia de datos.
+
+* **TASK-5 (Santiago): Parsing de `>` y `&`**
+
+  Extender el parser para operadores:
+  - Detectar redirección `>` y capturar archivo destino.
+  - Validar que solo exista una redirección.
+  - Detectar ejecución en background con `&`.
+  - Separar múltiples comandos si hay varios `&`.
+  - Marcar errores de sintaxis (ej: múltiples `>` o falta de archivo).
 
 ---
 
-### 📤 ÉPICA 6: Redirección
+### ÉPICA 3: Ejecución
 
-* **TASK-13 (Emiro):** Redirección `>`
+* **TASK-6 (Emiro): `fork()` + `execv()`**
+
+  Ejecutar comandos externos:
+  - Crear proceso hijo con `fork()`.
+  - En el hijo, llamar `execv()` con el comando y argumentos.
+  - Manejar error si `execv` retorna.
+  - El padre continúa controlando el flujo.
+
+* **TASK-7 (Emiro): Manejo de argumentos**
+
+  Preparar correctamente los argumentos:
+  - Asegurar que `args` termine en `NULL`.
+  - Pasar correctamente `argv[0]` como nombre del comando.
+  - Validar casos sin argumentos.
+
+* **TASK-8 (Emiro): `wait()` / `waitpid()`**
+
+  Sincronización de procesos:
+  - Usar `wait()` o `waitpid()` para esperar procesos hijos.
+  - No esperar si el comando es en background.
+  - Manejar múltiples hijos en caso de paralelismo.
 
 ---
 
-### ⚡ ÉPICA 7: Paralelismo
+### ÉPICA 4: Built-in commands
+
+* **TASK-9 (Emiro): `exit`**
+
+  Implementar comando interno:
+  - Terminar el shell con `exit(0)`.
+  - Validar que no reciba argumentos.
+
+* **TASK-10 (Emiro): `cd`**
+
+  Cambio de directorio:
+  - Usar `chdir()`.
+  - Validar que reciba exactamente un argumento.
+  - Manejar error si falla.
+
+* **TASK-11 (Emiro): `path`**
+
+  Manejo de rutas:
+  - Mantener lista de directorios.
+  - Permitir sobrescribir rutas existentes.
+  - Soportar múltiples rutas separadas por espacios.
+
+---
+
+### ÉPICA 5: Path
+
+* **TASK-12 (Emiro): Búsqueda de ejecutables (`access`)**
+
+  Resolver comandos:
+  - Recorrer directorios del `path`.
+  - Verificar existencia con `access(path, X_OK)`.
+  - Construir ruta completa del ejecutable.
+  - Manejar error si no se encuentra.
+
+---
+
+### ÉPICA 6: Redirección
+
+* **TASK-13 (Emiro): Redirección `>`**
+
+  Redirigir salida estándar y error:
+  - Abrir archivo con `open()` (crear o truncar).
+  - Usar `dup2()` para redirigir `STDOUT` y `STDERR`.
+  - Cerrar descriptores innecesarios.
+  - Validar errores de sintaxis.
+
+---
+
+### ÉPICA 7: Paralelismo
 
 * **TASK-14 (Santiago + Emiro):**
 
-  * Santiago: parsing de `&`
-  * Emiro: ejecución en paralelo
+  * **Santiago: parsing de `&`**
+    - Separar múltiples comandos en una misma línea.
+    - Generar múltiples estructuras `Command`.
+
+  * **Emiro: ejecución en paralelo**
+    - Ejecutar todos los comandos sin bloquear.
+    - Guardar PIDs de procesos hijos.
+    - Esperar todos los procesos al final.
 
 ---
 
-### ❌ ÉPICA 8: Manejo de errores
+### ÉPICA 8: Manejo de errores
 
-* **TASK-15 (Santiago):** Mensaje único de error
+* **TASK-15 (Santiago): Mensaje único de error**
 
----
-
-### 🔗 ÉPICA 9: Integración
-
-* **TASK-16 (Ambos):** Integrar parser + ejecución
-
----
-
-### 🧪 ÉPICA 10: Testing
-
-* **TASK-17 (Ambos):** Pruebas completas
+  Centralizar errores:
+  - Implementar mensaje: `"An error has occurred\n"`.
+  - Escribir en `STDERR`.
+  - Reutilizar para todos los casos de error.
+  - No imprimir mensajes adicionales.
 
 ---
 
-## 📦 Contrato entre módulos
+### ÉPICA 9: Integración
+
+* **TASK-16 (Ambos): Integrar parser + ejecución**
+
+  Integración completa:
+  - Conectar salida del parser con módulo de ejecución.
+  - Manejar flujo completo: input → parse → execute.
+  - Validar interacción entre features (path, redirección, paralelismo).
+  - Resolver conflictos entre módulos.
+
+---
+
+### ÉPICA 10: Testing
+
+* **TASK-17 (Ambos): Pruebas completas**
+
+  Validación del sistema:
+  - Probar comandos simples (`ls`, `pwd`).
+  - Probar con argumentos.
+  - Probar built-ins (`cd`, `exit`, `path`).
+  - Probar redirección (`>`).
+  - Probar paralelismo (`&`).
+  - Probar casos de error.
+  - Crear casos de prueba en batch mode.
+
+---
+
+## Contrato entre módulos
 
 Para evitar conflictos, se define esta estructura:
 
@@ -141,12 +252,18 @@ typedef struct {
 } Command;
 ```
 
-* **Santiago** construye esta estructura (parser)
-* **Emiro** la usa para ejecutar comandos
+## Responsabilidades:
+
+Santiago (Parser):
+Construye completamente la estructura Command.
+Garantiza que los datos sean válidos y consistentes.
+Emiro (Ejecución):
+Consume la estructura sin modificarla.
+Ejecuta según los campos definidos.
 
 ---
 
-## 🕒 Reglas de trabajo
+## Reglas de trabajo
 
 * Hacer commits pequeños y claros
 * No trabajar directamente en `main`
