@@ -1,0 +1,5 @@
+comandos.txt
+pruebas.txt
+salida.txt
+wish
+wish.c

@@ -1,5 +1,7 @@
 # LAB2-API-Procesos
 
+## Para compilar ejecutar el comando ``gcc -o wish wish.c -Wall``
+
 ## (a) Nombres completos de los integrantes, correos y números de documento.
 
 
