@@ -66,11 +66,11 @@ int main(int argc, char *argv[]) {
             if (arg_count > 1) print_error();
             else { clear_path(); free(line); exit(0); }
         } 
-        else if (strcmp(args[0], "cd") == 0) {
+        else if (strcmp(args[0], "chd") == 0) {
             if (arg_count != 2) print_error();
             else if (chdir(args[1]) != 0) print_error();
         } 
-        else if (strcmp(args[0], "path") == 0) {
+        else if (strcmp(args[0], "route") == 0) {
             clear_path();
             for (int i = 1; i < arg_count; i++) search_path[path_count++] = strdup(args[i]);
             search_path[path_count] = NULL;
