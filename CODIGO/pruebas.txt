@@ -1,3 +1,4 @@
 ls
-pwd
-ls > salida.txt
+path
+ls
+exit
