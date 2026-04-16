@@ -53,7 +53,7 @@ int main(int argc, char *argv[]) {
 
         line[strcspn(line, "\n")] = '\0';
 
-        // 🔥 SEPARAR POR &
+        // SEPARAR POR &
         char *commands[100];
         int cmd_count = 0;
         char *line_ptr = line;
@@ -84,7 +84,7 @@ int main(int argc, char *argv[]) {
 
             if (arg_count == 0) continue;
 
-            // 🔹 BUILT-IN
+            // BUILT-IN
             if (strcmp(args[0], "exit") == 0) {
                 if (arg_count > 1) print_error();
                 else {
@@ -105,7 +105,7 @@ int main(int argc, char *argv[]) {
                 search_path[path_count] = NULL;
             } 
             else {
-                // 🔹 REDIRECCIÓN
+                // REDIRECCIÓN
                 char *out_file = NULL;
                 int red_idx = -1;
 
@@ -124,7 +124,7 @@ int main(int argc, char *argv[]) {
                     args[red_idx] = NULL;
                 }
 
-                // 🔹 BUSCAR EJECUTABLE
+                // BUSCAR EJECUTABLE
                 char *executable = NULL;
                 for (int i = 0; i < path_count; i++) {
                     char buffer[512];
@@ -142,7 +142,7 @@ int main(int argc, char *argv[]) {
 
                 pid_t pid = fork();
                 if (pid == 0) {
-                    // 🔹 HIJO
+                    // HIJO
                     if (out_file != NULL) {
                         int fd = open(out_file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
                         if (fd < 0) {
@@ -170,7 +170,7 @@ int main(int argc, char *argv[]) {
             next_command: ;
         }
 
-        // 🔥 ESPERAR TODOS LOS PROCESOS (PARALELOS)
+        // ESPERAR TODOS LOS PROCESOS (PARALELOS)
         for (int i = 0; i < pid_count; i++) {
             waitpid(pids[i], NULL, 0);
         }
