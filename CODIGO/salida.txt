@@ -1,4 +1,4 @@
-comandos.txt
+error.txt
 pruebas.txt
 salida.txt
 wish
