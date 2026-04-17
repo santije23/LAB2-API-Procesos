@@ -1,5 +1,13 @@
-error.txt
-pruebas.txt
-salida.txt
-wish
-wish.c
+total 88
+drwxr-xr-x  12 root root  4096 Feb  9 19:54 .
+drwxr-xr-x  33 root root  4096 Apr 16 18:26 ..
+drwxr-xr-x   2 root root 36864 Apr 15 19:58 bin
+drwxr-xr-x   2 root root  4096 Apr 22  2024 games
+drwxr-xr-x  34 root root  4096 Mar 13 07:20 include
+drwxr-xr-x  57 root root  4096 Feb 14 20:24 lib
+drwxr-xr-x   2 root root  4096 Feb  9 19:55 lib64
+drwxr-xr-x   8 root root  4096 Apr 15 19:58 libexec
+drwxr-xr-x  10 root root  4096 Feb  9 19:54 local
+drwxr-xr-x   2 root root 12288 Mar 25 20:15 sbin
+drwxr-xr-x 111 root root  4096 Feb 14 20:24 share
+drwxr-xr-x   2 root root  4096 Apr 22  2024 src
