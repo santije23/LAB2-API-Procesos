@@ -1,0 +1,6 @@
+ls
+path
+ls
+path /bin /usr/bin
+ls
+exit
